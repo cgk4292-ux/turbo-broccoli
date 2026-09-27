@@ -1,0 +1,2406 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YOUFLIX</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body {
+      background-color: #0f1016;
+      color: #fff;
+      padding-bottom: 85px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #14151b;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .brand {
+      color: #e50914;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .quick-search {
+      background: #232530;
+      border: 1px solid #333;
+      padding: 6px 12px;
+      border-radius: 20px;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .google-signin-btn {
+      background: #ffffff;
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* 16:9 Featured Banner with 3-Dots Admin Menu */
+    .featured-banner-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #181922;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+    }
+    .featured-banner-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .featured-banner-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 50%, rgba(15,16,22,0.95) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px 16px;
+    }
+    .banner-top-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #ffda79;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+    }
+    .banner-bottom-info {
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.9);
+    }
+
+    .banner-dots-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0,0,0,0.85);
+      border: 1px solid #666;
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 30;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.9);
+    }
+
+    .banner-dropdown-menu {
+      position: absolute;
+      top: 54px;
+      right: 12px;
+      background: #1e2029;
+      border: 1px solid #333;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.9);
+      display: none;
+      z-index: 40;
+      width: 160px;
+      overflow: hidden;
+    }
+    .banner-menu-item {
+      padding: 12px 14px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+      border-bottom: 1px solid #282b38;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .banner-menu-item:active { background: #2e3242; }
+
+    /* Views */
+    .view-screen { display: none; }
+    .view-screen.active-screen { display: block; }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 16px 16px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      background-color: #e50914;
+      border-radius: 2px;
+    }
+
+    /* Hub Modals (Games & Cartoon Layout Fix) */
+    #cartoonModal, #gamesModal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #0f1016;
+      z-index: 250;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .hub-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #14151b;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .hub-filter-container {
+      padding: 12px 16px;
+      background: #181922;
+      border-bottom: 1px solid #282b38;
+    }
+    .hub-bar-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #ffda79;
+      margin-bottom: 8px;
+    }
+    .hub-scroll-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+      flex-direction: row !important;
+      white-space: nowrap;
+    }
+    .hub-scroll-row::-webkit-scrollbar { display: none; }
+    .hub-chip, .g-chip {
+      background: #252834;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+      border: 1px solid #444;
+      flex-shrink: 0;
+    }
+    .hub-chip.active-hub-chip, .g-chip.active-g-chip {
+      background: #e50914;
+      border-color: #e50914;
+    }
+
+    /* Cartoon Slots Layout */
+    .cartoon-slot-container {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .cartoon-slot-card {
+      background: #22c55e;
+      border-radius: 8px;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .cartoon-red-box {
+      width: 55px;
+      height: 55px;
+      background: #ef4444;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+    }
+    .cartoon-name-text {
+      font-size: 18px;
+      font-weight: 900;
+      color: #1f2937;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .cartoon-add-slot-btn {
+      background: #22c55e;
+      color: #fff;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      font-size: 32px;
+      font-weight: bold;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.5);
+    }
+
+    /* Language Cards */
+    .h-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 0 16px 10px;
+      scrollbar-width: none;
+    }
+    .h-scroll::-webkit-scrollbar { display: none; }
+    .lang-card {
+      min-width: 105px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+      flex-shrink: 0;
+      border: 2px solid transparent;
+    }
+    .lang-card.selected-lang { border: 2px solid #ffda79; }
+    .lang-title { font-size: 14px; font-weight: 700; color: #fff; white-space: nowrap; }
+
+    .lang-all { background: linear-gradient(135deg, #374151, #1f2937); }
+    .lang-hi  { background: linear-gradient(135deg, #f39c12, #d35400); }
+    .lang-ta  { background: linear-gradient(135deg, #e67e22, #b9770e); }
+    .lang-te  { background: linear-gradient(135deg, #27ae60, #1e8449); }
+    .lang-bn  { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .lang-ml  { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+    .lang-mr  { background: linear-gradient(135deg, #2980b9, #1f618d); }
+    .lang-kn  { background: linear-gradient(135deg, #d35400, #a04000); }
+    .lang-pa  { background: linear-gradient(135deg, #7f8c8d, #515a5a); }
+    .lang-en  { background: linear-gradient(135deg, #3498db, #2980b9); }
+
+    /* Actors Section */
+    .actors-container {
+      background: #14151c;
+      padding: 12px 0;
+      margin-bottom: 6px;
+      border-top: 1px solid #1f212a;
+      border-bottom: 1px solid #1f212a;
+    }
+    .actors-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px 8px;
+    }
+    .actors-title-row span { font-size: 13px; color: #ffda79; font-weight: 600; }
+    .actors-scroll {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 0 16px;
+      scrollbar-width: none;
+    }
+    .actors-scroll::-webkit-scrollbar { display: none; }
+    .actor-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .actor-img-box {
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      border: 2px solid #555;
+      overflow: hidden;
+      background: #252834;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .actor-item.active-actor .actor-img-box { border: 3px solid #ffda79; transform: scale(1.08); }
+    .actor-img-box img { width: 100%; height: 100%; object-fit: cover; }
+    .actor-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: #ddd;
+      margin-top: 6px;
+      max-width: 75px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .actor-add-btn {
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      border: 2px dashed #ffda79;
+      background: #1c1d25;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #ffda79;
+      font-size: 24px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .actor-add-btn span { font-size: 9px; font-weight: bold; margin-top: -2px; }
+
+    /* Search & Filters */
+    .search-input-box {
+      display: flex;
+      align-items: center;
+      background: #232530;
+      border: 1px solid #323544;
+      border-radius: 24px;
+      padding: 8px 16px;
+      gap: 10px;
+      margin: 10px 16px;
+    }
+    .search-input-box svg { width: 18px; height: 18px; fill: #8e90a0; flex-shrink: 0; }
+    .search-input-box input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      width: 100%;
+    }
+
+    .filter-wrapper {
+      padding: 4px 0 8px;
+      background: #14151c;
+      border-bottom: 1px solid #1f212c;
+    }
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 16px;
+      scrollbar-width: none;
+    }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .chip {
+      background: #232530;
+      color: #cfd2dc;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .chip.active-main { background: #332d1d; color: #ffda79; border-color: #ffda79; }
+    .chip.active { background: #e50914; color: #fff; }
+    .sub-filter-header { padding: 6px 16px 2px; font-size: 12px; color: #8e90a0; font-weight: 600; }
+
+    /* Movie Grid */
+    .movie-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 12px 14px;
+    }
+    .movie-card {
+      background: #181922;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .poster-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      background: #252834;
+    }
+    .poster-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .badge-top {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      background: rgba(0, 168, 255, 0.85);
+      color: #fff;
+      font-size: 8px;
+      font-weight: 800;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    .bottom-meta {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      right: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9px;
+      font-weight: bold;
+      color: #ffda79;
+    }
+    .rating-badge { background: rgba(0,0,0,0.7); padding: 1px 4px; border-radius: 3px; }
+    .movie-card-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      padding: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Bottom Nav Bar with Modern 3D Icons */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #121319;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #1f212c;
+      z-index: 150;
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.6);
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #7b7e8c;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      flex: 1;
+      gap: 3px;
+      transition: transform 0.2s;
+    }
+    .nav-item:active { transform: scale(0.92); }
+    .nav-item.active { color: #ffda79; }
+    .nav-item svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+    .nav-center-btn {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      border: 3px solid #121319;
+      margin-top: -20px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 65, 108, 0.7);
+    }
+
+    /* Player Screen */
+    #playerModal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #0f1016;
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .player-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      background: #14151b;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .back-btn { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; }
+    .player-video-box { position: relative; width: 100%; background: #000; }
+    video { width: 100%; max-height: 230px; display: block; }
+
+    .player-settings-gear {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: rgba(0,0,0,0.65);
+      border: 1px solid #444;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 25;
+    }
+    .player-settings-gear svg { width: 18px; height: 18px; fill: #fff; }
+
+    .consume-note {
+      background: #1a1c24;
+      color: #aaa;
+      font-size: 11px;
+      padding: 6px 16px;
+      text-align: center;
+      border-bottom: 1px solid #252834;
+    }
+    .consume-note span { color: #ffda79; font-weight: bold; }
+
+    .player-content { padding: 14px 16px; }
+    .title-season-row { display: flex; align-items: center; gap: 10px; }
+    .main-title { font-size: 20px; font-weight: 800; }
+    .season-btn-pill {
+      background: #252834;
+      color: #ffda79;
+      border: 1px solid #3e4254;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .tags-row { display: flex; gap: 6px; margin: 10px 0 14px; flex-wrap: wrap; }
+    .tag-box { background: #20222b; color: #bbb; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .tag-box.rating { color: #ffda79; }
+    .tag-box.ua { background: #0284c7; color: #fff; }
+
+    .btn-play-large {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #111;
+      width: 100%;
+      padding: 12px;
+      border-radius: 26px;
+      font-size: 16px;
+      font-weight: 900;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+      margin-bottom: 14px;
+    }
+
+    .action-icons-bar {
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0 14px;
+      border-bottom: 1px solid #1f212c;
+    }
+    .action-icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #aaa;
+      cursor: pointer;
+    }
+    .action-icon-item svg { width: 22px; height: 22px; fill: #fff; }
+
+    .promo-banner {
+      width: 100%;
+      height: 70px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #b45309, #78350f);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      margin: 12px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .promo-banner h4 { font-size: 14px; color: #ffda79; font-weight: 900; }
+    .promo-banner span { font-size: 11px; color: #fff; }
+
+    .detail-tabs {
+      display: flex;
+      gap: 20px;
+      border-bottom: 1px solid #252834;
+      padding-bottom: 8px;
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #777;
+    }
+    .detail-tabs .active-tab { color: #fff; border-bottom: 2px solid #e50914; padding-bottom: 8px; }
+    .synopsis-text { font-size: 12px; color: #aaa; line-height: 1.5; margin: 10px 0 14px; }
+
+    /* Episodes Section */
+    .episodes-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .episodes-title-row h3 { font-size: 14px; color: #fff; }
+    .episodes-title-row span { font-size: 12px; color: #ffda79; cursor: pointer; }
+    .episodes-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 10px;
+    }
+    .episodes-scroll::-webkit-scrollbar { display: none; }
+    .episode-card { min-width: 140px; cursor: pointer; display: flex; flex-direction: column; flex-shrink: 0; }
+    .episode-card.active-ep .ep-thumb-box { border: 2px solid #ffda79; }
+    .ep-thumb-box { width: 100%; height: 80px; border-radius: 6px; overflow: hidden; position: relative; background: #252834; }
+    .ep-thumb-box img { width: 100%; height: 100%; object-fit: cover; }
+    .ep-duration { position: absolute; bottom: 4px; right: 4px; background: rgba(0,0,0,0.8); font-size: 9px; color: #fff; padding: 1px 4px; border-radius: 3px; }
+    .ep-info { font-size: 11px; font-weight: bold; color: #ddd; margin-top: 5px; }
+
+    /* Season Sheet */
+    #seasonSheet {
+      position: fixed;
+      bottom: -100%;
+      left: 0;
+      right: 0;
+      max-height: 70vh;
+      overflow-y: auto;
+      background: #181a24;
+      border-top: 2px solid #2d3042;
+      border-radius: 16px 16px 0 0;
+      z-index: 250;
+      padding: 16px 20px 30px;
+      transition: bottom 0.3s ease;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.8);
+    }
+    #seasonSheet.show { bottom: 0; }
+    .season-option-item {
+      padding: 14px 10px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #fff;
+      border-bottom: 1px solid #232635;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    /* Google Sign-In Custom Modal */
+    #googleSignInModal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 350;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .google-modal-box {
+      background: #1e2029;
+      border: 2px solid #ea4335;
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 340px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+    }
+    .google-logo-big {
+      font-size: 65px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+    .google-modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    /* YouTube Settings Overlays */
+    .yt-settings-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 280;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .yt-menu-card {
+      background: #212121;
+      border-radius: 16px 16px 0 0;
+      width: 100%;
+      max-width: 500px;
+      padding: 12px 0 24px;
+      box-shadow: 0 -4px 25px rgba(0,0,0,0.9);
+    }
+    .yt-handle-bar { width: 40px; height: 4px; background: #555; border-radius: 2px; margin: 0 auto 12px; }
+    .yt-menu-title { font-size: 15px; font-weight: bold; color: #fff; padding: 4px 20px 12px; border-bottom: 1px solid #333; }
+    .yt-menu-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; cursor: pointer; }
+    .yt-menu-row:active { background: #333; }
+    .yt-row-left { display: flex; align-items: center; gap: 14px; font-size: 14px; font-weight: 500; color: #fff; }
+    .yt-row-left svg { width: 20px; height: 20px; fill: #fff; }
+    .yt-row-right { font-size: 13px; color: #aaa; display: flex; align-items: center; gap: 6px; }
+    .yt-row-desc { font-size: 11px; color: #888; margin-top: 2px; }
+
+    #lockOverlayNotice {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      color: #ffda79;
+      border: 1px solid #ffda79;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      z-index: 290;
+      display: none;
+      cursor: pointer;
+    }
+
+    /* Modals & Uploaders */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: 16px;
+    }
+    .modal-box {
+      background: #181920;
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-box h3 { margin-bottom: 12px; color: #e50914; }
+    .modal-box label { font-size: 12px; color: #aaa; margin-bottom: 4px; display: block; }
+    .modal-box input, .modal-box select {
+      width: 100%;
+      padding: 9px;
+      background: #252834;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #fff;
+      margin-bottom: 12px;
+      outline: none;
+      font-size: 13px;
+    }
+    .btn-save { background: #e50914; color: #fff; width: 100%; padding: 10px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer; margin-bottom: 8px; }
+    .btn-cancel { background: #333; color: #ccc; width: 100%; padding: 10px; border-radius: 6px; border: none; cursor: pointer; }
+
+    .upload-progress-container {
+      display: none;
+      margin-bottom: 14px;
+      background: #20222c;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .progress-info-row { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; color: #ffda79; margin-bottom: 6px; }
+    .progress-bar-track { width: 100%; height: 8px; background: #111; border-radius: 4px; overflow: hidden; }
+    .progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #e50914, #22c55e); transition: width 0.1s linear; }
+
+    .gallery-upload-card {
+      background: #20222b;
+      border: 2px dashed #ffda79;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+    .gallery-upload-card span { display: block; font-size: 11px; color: #ffda79; font-weight: bold; margin-top: 4px; }
+
+    .qr-container {
+      background: #000;
+      border: 2px solid #5f259f;
+      border-radius: 12px;
+      padding: 10px;
+      width: 210px;
+      margin: 10px auto;
+      text-align: center;
+    }
+    .qr-container img { width: 170px; height: 170px; object-fit: contain; background: #fff; border-radius: 8px; padding: 4px; }
+
+    /* Admin Analytics & Hacker Logs Dashboard */
+    .admin-analytics-box {
+      background: #1c1e29;
+      border: 2px solid #22c55e;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+    }
+    .analytics-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: #22c55e;
+      margin-bottom: 10px;
+      text-align: center;
+      border-bottom: 1px solid #333;
+      padding-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .analytics-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .analytics-row span:last-child {
+      font-weight: 900;
+      color: #ffda79;
+    }
+    .bank-transfer-guide {
+      font-size: 11px;
+      color: #aaa;
+      background: #14151b;
+      padding: 8px;
+      border-radius: 6px;
+      margin-top: 10px;
+      line-height: 1.4;
+      border-left: 3px solid #ffda79;
+    }
+    .bank-transfer-guide strong {
+      color: #fff;
+    }
+    .hacker-alert-box {
+      background: #2a1215;
+      border: 1px solid #e50914;
+      border-radius: 6px;
+      padding: 8px;
+      margin-top: 10px;
+      font-size: 11px;
+      color: #ff4d4f;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    .user-log-box {
+      background: #14151b;
+      border: 1px solid #3b82f6;
+      border-radius: 6px;
+      padding: 8px;
+      margin-top: 10px;
+      font-size: 11px;
+      color: #93c5fd;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body oncontextmenu="return false;">
+
+  <!-- Global Header -->
+  <header>
+    <div class="brand" id="brandHomeBtn">YOUFLIX</div>
+    <div class="header-right">
+      <button class="google-signin-btn" id="headerSignInBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.19v3.15C3.17 21.31 7.24 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.61H1.19C.43 8.13 0 9.84 0 12s.43 3.87 1.19 5.39l4.08-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.24 0 3.17 2.69 1.19 6.61l4.08 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+        Sign in
+      </button>
+      <div class="quick-search" id="quickSearchBtn">🔍 खोजें</div>
+    </div>
+  </header>
+
+  <!-- GOOGLE SIGN-IN MODAL -->
+  <div id="googleSignInModal" class="modal-overlay" style="display:none;">
+    <div class="google-modal-box">
+      <div class="google-logo-big">G</div>
+      <div class="google-modal-title">Google Sign up</div>
+      
+      <label style="text-align:left; color:#bbb;">आपका नाम (Your Name):</label>
+      <input type="text" id="googleUserNameInput" placeholder="जैसे: Prince Sahu" style="width:100%; padding:10px; background:#252834; border:1px solid #444; border-radius:6px; color:#fff; margin-bottom:12px; outline:none;">
+      
+      <label style="text-align:left; color:#bbb;">ईमेल (Email ID):</label>
+      <input type="email" id="googleUserEmailInput" placeholder="जैसे: user@gmail.com" style="width:100%; padding:10px; background:#252834; border:1px solid #444; border-radius:6px; color:#fff; margin-bottom:16px; outline:none;">
+      
+      <button class="btn-save" id="saveGoogleUserBtn" style="background:#4285F4; margin-bottom:8px;">सत्यापित करें और साइन अप करें</button>
+      <button class="btn-cancel" id="cancelGoogleUserBtn">रद्द करें</button>
+    </div>
+  </div>
+
+  <!-- CARTOON HUB MODAL -->
+  <div id="cartoonModal">
+    <div class="hub-header">
+      <div class="brand" style="font-size:18px;">🎨 YOUFLIX CARTOON HUB</div>
+      <button class="back-btn" id="closeCartoonBtn">← Back</button>
+    </div>
+
+    <div class="hub-filter-container">
+      <div class="hub-bar-title">🌐 विश्व की सभी भाषाएँ चुनें (World Languages):</div>
+      <div class="hub-scroll-row" id="cartoonLangBar">
+        <div class="hub-chip active-hub-chip" onclick="filterCartoonLang('All', this)">All Languages</div>
+        <div class="hub-chip" onclick="filterCartoonLang('Hindi', this)">हिन्दी</div>
+        <div class="hub-chip" onclick="filterCartoonLang('English', this)">English</div>
+        <div class="hub-chip" onclick="filterCartoonLang('Spanish', this)">Español</div>
+        <div class="hub-chip" onclick="filterCartoonLang('French', this)">Français</div>
+        <div class="hub-chip" onclick="filterCartoonLang('German', this)">Deutsch</div>
+        <div class="hub-chip" onclick="filterCartoonLang('Japanese', this)">日本語</div>
+        <div class="hub-chip" onclick="filterCartoonLang('Korean', this)">한국어</div>
+        <div class="hub-chip" onclick="filterCartoonLang('Chinese', this)">中文</div>
+        <div class="hub-chip" onclick="filterCartoonLang('Arabic', this)">العربية</div>
+        <div class="hub-chip" onclick="filterCartoonLang('Russian', this)">Русский</div>
+        <div class="hub-chip" onclick="filterCartoonLang('Portuguese', this)">Português</div>
+        <div class="hub-chip" onclick="filterCartoonLang('Italian', this)">Italiano</div>
+      </div>
+    </div>
+
+    <div class="hub-filter-container">
+      <div class="hub-bar-title">🌍 देश चुनें (Countries):</div>
+      <div class="hub-scroll-row" id="cartoonCountryBar">
+        <div class="hub-chip active-hub-chip" onclick="filterCartoonCountry('All', this)">All Countries</div>
+        <div class="hub-chip" onclick="filterCartoonCountry('India', this)">🇮🇳 India</div>
+        <div class="hub-chip" onclick="filterCartoonCountry('United States', this)">🇺🇸 USA</div>
+        <div class="hub-chip" onclick="filterCartoonCountry('Japan', this)">🇯🇵 Japan</div>
+        <div class="hub-chip" onclick="filterCartoonCountry('China', this)">🇨🇳 China</div>
+      </div>
+    </div>
+
+    <div class="cartoon-slot-container" id="cartoonSlotContainer"></div>
+    <button class="cartoon-add-slot-btn" id="openAdminFromCartoonBtn">+</button>
+  </div>
+
+  <!-- GAMES HUB MODAL -->
+  <div id="gamesModal">
+    <div class="games-header">
+      <div class="brand" style="font-size:18px;">🎮 YOUFLIX GAMES HUB</div>
+      <button class="back-btn" id="closeGamesBtn">← Back</button>
+    </div>
+
+    <div class="hub-filter-container">
+      <div class="hub-bar-title">🌐 विश्व की सभी भाषाएँ चुनें (World Languages):</div>
+      <div class="hub-scroll-row" id="gamesLangBar">
+        <div class="hub-chip active-hub-chip" onclick="filterGamesLang('All', this)">All Languages</div>
+        <div class="hub-chip" onclick="filterGamesLang('Hindi', this)">हिन्दी</div>
+        <div class="hub-chip" onclick="filterGamesLang('English', this)">English</div>
+        <div class="hub-chip" onclick="filterGamesLang('Spanish', this)">Español</div>
+        <div class="hub-chip" onclick="filterGamesLang('French', this)">Français</div>
+        <div class="hub-chip" onclick="filterGamesLang('German', this)">Deutsch</div>
+        <div class="hub-chip" onclick="filterGamesLang('Japanese', this)">日本語</div>
+        <div class="hub-chip" onclick="filterGamesLang('Korean', this)">한국어</div>
+        <div class="hub-chip" onclick="filterGamesLang('Chinese', this)">中文</div>
+        <div class="hub-chip" onclick="filterGamesLang('Arabic', this)">العربية</div>
+        <div class="hub-chip" onclick="filterGamesLang('Russian', this)">Русский</div>
+        <div class="hub-chip" onclick="filterGamesLang('Portuguese', this)">Português</div>
+        <div class="hub-chip" onclick="filterGamesLang('Italian', this)">Italiano</div>
+      </div>
+    </div>
+
+    <div class="hub-filter-container">
+      <div class="hub-bar-title">🌍 देश चुनें (Countries & National Sports):</div>
+      <div class="hub-scroll-row" id="gamesCountryBar">
+        <div class="hub-chip active-hub-chip" onclick="filterGamesCountry('All', this)">All Countries</div>
+        <div class="hub-chip" onclick="filterGamesCountry('India', this)">🇮🇳 India (क्रिकेट/कब्बड़ी)</div>
+        <div class="hub-chip" onclick="filterGamesCountry('United States', this)">🇺🇸 USA (बास्केटबॉल/बेसबॉल)</div>
+        <div class="hub-chip" onclick="filterGamesCountry('United Kingdom', this)">🇬🇧 UK (फुटबॉल/क्रिकेट)</div>
+        <div class="hub-chip" onclick="filterGamesCountry('Brazil', this)">🇧🇷 Brazil (फुटबॉल)</div>
+        <div class="hub-chip" onclick="filterGamesCountry('Japan', this)">🇯🇵 Japan (सुमो/बेसबॉल)</div>
+        <div class="hub-chip" onclick="filterGamesCountry('Australia', this)">🇦🇺 Australia (क्रिकेट/रग्बी)</div>
+        <div class="hub-chip" onclick="filterGamesCountry('China', this)">🇨🇳 China (बैडमिंटन/टेनिस)</div>
+      </div>
+    </div>
+
+    <div class="section-title">खेल वीडियो और लाइव मैच (Sports & Games)</div>
+    <div class="movie-grid" id="gamesMovieContainer"></div>
+  </div>
+
+  <!-- SCREEN 1: HOME SCREEN -->
+  <div id="homeScreen" class="view-screen active-screen">
+    
+    <!-- 16:9 FEATURED BANNER WITH 3-DOTS ADMIN MENU -->
+    <div class="featured-banner-wrapper" id="featuredBannerBox">
+      <img id="mainFeaturedImg" src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800" alt="Featured Banner">
+      <div class="featured-banner-overlay">
+        <div class="banner-top-title">NEW MOVIES COMING SOON</div>
+        <div class="banner-bottom-info">Blockbuster Experience on YOUFLIX</div>
+      </div>
+      
+      <div class="banner-dots-btn" id="bannerDotsBtn" onclick="toggleBannerMenu(event)">⋮</div>
+
+      <div class="banner-dropdown-menu" id="bannerDropdownMenu">
+        <div class="banner-menu-item" onclick="triggerBannerChange()">✏️ पेंसिल (बैनर बदलें)</div>
+        <div class="banner-menu-item" style="color:#ff4d4f;" onclick="triggerBannerDelete()">🗑️ डिलीट (डिफ़ॉल्ट करें)</div>
+      </div>
+    </div>
+
+    <div class="section-title"><span>Explore In Your Language</span></div>
+
+    <div class="h-scroll">
+      <div class="lang-card lang-all selected-lang" onclick="selectHomeLang('All', this)"><span class="lang-title">All (सभी)</span></div>
+      <div class="lang-card lang-hi" onclick="selectHomeLang('Hindi', this)"><span class="lang-title">हिन्दी</span></div>
+      <div class="lang-card lang-ta" onclick="selectHomeLang('Tamil', this)"><span class="lang-title">தமிழ்</span></div>
+      <div class="lang-card lang-te" onclick="selectHomeLang('Telugu', this)"><span class="lang-title">తెలుగు</span></div>
+      <div class="lang-card lang-bn" onclick="selectHomeLang('Bengali', this)"><span class="lang-title">বাংলা</span></div>
+      <div class="lang-card lang-ml" onclick="selectHomeLang('Malayalam', this)"><span class="lang-title">മലയാളം</span></div>
+      <div class="lang-card lang-mr" onclick="selectHomeLang('Marathi', this)"><span class="lang-title">मराठी</span></div>
+      <div class="lang-card lang-kn" onclick="selectHomeLang('Kannada', this)"><span class="lang-title">ಕನ್ನಡ</span></div>
+      <div class="lang-card lang-pa" onclick="selectHomeLang('Punjabi', this)"><span class="lang-title">ਪੰਜਾਬੀ</span></div>
+      <div class="lang-card lang-en" onclick="selectHomeLang('English', this)"><span class="lang-title">English</span></div>
+    </div>
+
+    <div class="actors-container">
+      <div class="actors-title-row">
+        <span id="homeActorsTitle">🌟 कलाकार (फ़िल्में देखने के लिए टैप करें):</span>
+      </div>
+      <div class="actors-scroll" id="homeActorsList"></div>
+    </div>
+
+    <div class="section-title"><span>सभी वीडियो व फ़िल्में</span></div>
+    <div class="movie-grid" id="homeMovieContainer"></div>
+  </div>
+
+  <!-- SCREEN 2: FIND SCREEN -->
+  <div id="findScreen" class="view-screen">
+    <div class="search-input-box">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="searchInput" placeholder="Search movies, shows, stars..." oninput="applyAllFilters()">
+    </div>
+
+    <div class="filter-wrapper">
+      <div class="filter-row" id="typeFilters">
+        <div class="chip active-main" onclick="selectFilter('type', 'All', this)">All Type</div>
+        <div class="chip" onclick="selectFilter('type', 'Movies', this)">🎬 Movies</div>
+        <div class="chip" onclick="selectFilter('type', 'TV shows', this)">📺 TV shows</div>
+        <div class="chip" onclick="selectFilter('type', 'Songs', this)">🎵 Songs</div>
+        <div class="chip" id="cartoonChipBtn">🎨 Cartoon</div>
+        <div class="chip" onclick="selectFilter('type', 'Horror', this)">👻 Horror</div>
+        <div class="chip" id="gamesChipBtn">🎮 खेल (Games)</div>
+      </div>
+
+      <div class="filter-row" id="genreFilters">
+        <div class="chip active-main" onclick="selectFilter('genre', 'All', this)">All Genre</div>
+        <div class="chip" onclick="selectFilter('genre', 'Action', this)">🤺 Action</div>
+        <div class="chip" onclick="selectFilter('genre', 'Comedy', this)">😀 Comedy</div>
+        <div class="chip" onclick="selectFilter('genre', 'Drama', this)">💬 Drama</div>
+        <div class="chip" onclick="selectFilter('genre', 'Romance', this)">🤍 Romance</div>
+      </div>
+
+      <div class="filter-row" id="platformFilters">
+        <div class="chip active-main" onclick="selectFilter('platform', 'All', this)">All Platform</div>
+        <div class="chip" onclick="selectFilter('platform', 'NETFLIX', this)">NETFLIX</div>
+      </div>
+
+      <div class="sub-filter-header">🌍 Country (देश)</div>
+      <div class="filter-row" id="countryFilters">
+        <div class="chip active-main" onclick="selectFilter('country', 'All', this)">All Countries</div>
+        <div class="chip" onclick="selectFilter('country', 'India', this)">India</div>
+        <div class="chip" onclick="selectFilter('country', 'South Korea', this)">South Korea</div>
+        <div class="chip" onclick="selectFilter('country', 'United States', this)">United States</div>
+        <div class="chip" onclick="selectFilter('country', 'Japan', this)">Japan</div>
+        <div class="chip" onclick="selectFilter('country', 'China', this)">China</div>
+      </div>
+
+      <div class="sub-filter-header">📅 Release Year (1900 से 2026)</div>
+      <div class="filter-row" id="yearFilters">
+        <div class="chip active-main" onclick="selectFilter('year', 'All', this)">All Years</div>
+      </div>
+
+      <div class="sub-filter-header">🌐 Language</div>
+      <div class="filter-row" id="langFilters">
+        <div class="chip active-main" onclick="selectFilter('lang', 'All', this)">All</div>
+        <div class="chip" onclick="selectFilter('lang', 'Hindi', this)">Hindi</div>
+        <div class="chip" onclick="selectFilter('lang', 'English', this)">English</div>
+        <div class="chip" onclick="selectFilter('lang', 'Spanish', this)">Spanish</div>
+        <div class="chip" onclick="selectFilter('lang', 'French', this)">French</div>
+        <div class="chip" onclick="selectFilter('lang', 'German', this)">German</div>
+        <div class="chip" onclick="selectFilter('lang', 'Japanese', this)">Japanese</div>
+        <div class="chip" onclick="selectFilter('lang', 'Korean', this)">Korean</div>
+        <div class="chip" onclick="selectFilter('lang', 'Chinese', this)">Chinese</div>
+        <div class="chip" onclick="selectFilter('lang', 'Arabic', this)">Arabic</div>
+        <div class="chip" onclick="selectFilter('lang', 'Russian', this)">Russian</div>
+        <div class="chip" onclick="selectFilter('lang', 'Portuguese', this)">Portuguese</div>
+        <div class="chip" onclick="selectFilter('lang', 'Italian', this)">Italian</div>
+        <div class="chip" onclick="selectFilter('lang', 'Tamil', this)">Tamil</div>
+        <div class="chip" onclick="selectFilter('lang', 'Telugu', this)">Telugu</div>
+        <div class="chip" onclick="selectFilter('lang', 'Bengali', this)">Bengali</div>
+        <div class="chip" onclick="selectFilter('lang', 'Malayalam', this)">Malayalam</div>
+        <div class="chip" onclick="selectFilter('lang', 'Marathi', this)">Marathi</div>
+        <div class="chip" onclick="selectFilter('lang', 'Kannada', this)">Kannada</div>
+        <div class="chip" onclick="selectFilter('lang', 'Punjabi', this)">Punjabi</div>
+      </div>
+    </div>
+
+    <div class="active-bar" id="activeBar" style="display:none;">
+      <span class="active-label">Active:</span>
+      <span class="active-tag" id="activeTagBadge" onclick="clearActiveFilter()"></span>
+      <span class="clean-all-btn" onclick="clearAllFilters()">Clean all</span>
+    </div>
+
+    <div class="movie-grid" id="findMovieContainer"></div>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" id="navHome">
+      <svg viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="currentColor" fill-opacity="0.2"/></svg>
+      <span>Home</span>
+    </div>
+
+    <div class="nav-item" id="navFind">
+      <svg viewBox="0 0 24 24">
+        <circle cx="10.5" cy="10.5" r="7" stroke="currentColor" stroke-width="2.2" fill="currentColor" fill-opacity="0.2"/>
+        <line x1="15.5" y1="15.5" x2="21" y2="21" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span>Find</span>
+    </div>
+
+    <div class="nav-center-btn" id="navAdminPlusBtn">+</div>
+
+    <div class="nav-item" id="navDownload">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 3v10m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>Download</span>
+    </div>
+
+    <div class="nav-item" id="navMe">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.2"/>
+        <path d="M4 21v-1a7 7 0 0114 0v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span>Me</span>
+    </div>
+  </nav>
+
+  <!-- SCREEN 3: PLAYER SCREEN -->
+  <div id="playerModal">
+    <div class="player-header">
+      <button class="back-btn" id="closePlayerBtn">‹</button>
+      <div style="font-size:14px; font-weight:bold; color:#fff;">YOUFLIX Player</div>
+      <div style="width:20px;"></div>
+    </div>
+
+    <div class="player-video-box">
+      <video id="mainVideo" controls playsinline controlsList="nodownload"></video>
+      <div class="player-settings-gear" id="openYtSettingsBtn" title="Quality & Settings">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      </div>
+    </div>
+
+    <!-- 15-Second Break Notice Banner -->
+    <div id="breakNoticeBanner" style="display:none; background:#e50914; color:#fff; font-size:12px; font-weight:bold; text-align:center; padding:6px;">
+      ⏳ आपके लिए 15 सेकंड का विशेष ब्रेक (Promo) चल रहा है...
+    </div>
+
+    <div class="consume-note">Continuing to play will consume <span>17.5MB data</span></div>
+
+    <div class="player-content">
+      <div class="title-season-row">
+        <span class="main-title" id="pTitle">Bloodhounds</span>
+        <button class="season-btn-pill" id="pSeasonPill">Season 1 ▾</button>
+      </div>
+
+      <div class="tags-row">
+        <span class="tag-box rating" id="pRating">Rating 8.8 ★</span>
+        <span class="tag-box ua">UA</span>
+        <span class="tag-box" id="pYearTag">2026</span>
+        <span class="tag-box" id="pCountryTag">South Korea</span>
+        <span class="tag-box" id="pGenreTag">Action</span>
+        <span class="tag-box" id="pLangTag">Hindi</span>
+      </div>
+
+      <button class="btn-play-large" id="playVideoBtn">▶ Play (प्ले)</button>
+
+      <!-- Action Icons -->
+      <div class="action-icons-bar">
+        <div class="action-icon-item" id="listBtn">
+          <svg viewBox="0 0 24 24"><path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z"/></svg>
+          <span>+ List</span>
+        </div>
+        <div class="action-icon-item" id="rateBtn">
+          <svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+          <span>Rate</span>
+        </div>
+        <div class="action-icon-item" id="shareBtn">
+          <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+          <span>Share</span>
+        </div>
+        <div class="action-icon-item" id="downloadBtn">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          <span>Download</span>
+        </div>
+      </div>
+
+      <div class="promo-banner">
+        <div>
+          <h4>WATCH FILM & GET PRICE</h4>
+          <span>Watch videos and earn rewards</span>
+        </div>
+        <div style="font-size:28px;">🎁</div>
+      </div>
+
+      <div class="detail-tabs">
+        <span class="active-tab">Details</span>
+        <span>Comment...</span>
+      </div>
+
+      <div class="synopsis-text" id="pDesc">
+        Faced with ruthless foes with a violent thirst, two young boxers band together — risking life and limb to bring justice and protect their loved ones.
+      </div>
+
+      <div class="episodes-title-row">
+        <h3 id="episodesHeading">Season 1 • Episodes</h3>
+        <span id="changeSeasonSpan">Change Season ❯</span>
+      </div>
+      <div class="episodes-scroll" id="episodesList"></div>
+    </div>
+  </div>
+
+  <!-- Season Bottom Sheet -->
+  <div id="seasonSheet">
+    <div style="width:36px; height:4px; background:#444; border-radius:2px; margin:0 auto 14px;"></div>
+    <div id="seasonListOptions"></div>
+  </div>
+
+  <div id="lockOverlayNotice">🔒 स्क्रीन लॉक है। अनलॉक करने के लिए टैप करें।</div>
+
+  <!-- YouTube Settings Menu -->
+  <div id="ytSettingsMenu" class="yt-settings-overlay">
+    <div class="yt-menu-card" onclick="event.stopPropagation()">
+      <div class="yt-handle-bar"></div>
+      <div class="yt-menu-row" id="qualityMenuRow">
+        <div class="yt-row-left">
+          <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          <span>Quality</span>
+        </div>
+        <div class="yt-row-right"><span id="ytDisplayQualityLabel">Auto (720p)</span><span>›</span></div>
+      </div>
+      <div class="yt-menu-row" id="speedMenuRow">
+        <div class="yt-row-left">
+          <svg viewBox="0 0 24 24"><path d="M10 8v8l6-4-6-4zm11-5H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/></svg>
+          <span>Playback speed</span>
+        </div>
+        <div class="yt-row-right"><span id="ytDisplaySpeedLabel">1x</span><span>›</span></div>
+      </div>
+      <div class="yt-menu-row" id="captionsMenuRow">
+        <div class="yt-row-left">
+          <svg viewBox="0 0 24 24"><path d="M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 7H9.5v-.5h-2v3h2V13H11v1c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1c0 .55-.45 1-1 1h-3c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1z"/></svg>
+          <span>Captions</span>
+        </div>
+        <div class="yt-row-right"><span id="ytDisplayCaptionsLabel">Off</span><span>›</span></div>
+      </div>
+      <div class="yt-menu-row" id="lockMenuRow">
+        <div class="yt-row-left">
+          <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          <span>Lock screen</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="paymentModal" class="modal-overlay">
+    <div class="modal-box" style="text-align:center;">
+      <h3 style="color:#a855f7;">PhonePe से ₹100 पे करें</h3>
+      <p style="font-size:12px; color:#aaa;" id="payMovieName">Movie Name</p>
+      <div class="qr-container">
+        <div style="color:#a855f7; font-weight:bold; font-size:13px; margin-bottom:4px;">पे PhonePe ACCEPTED HERE</div>
+        <img id="displayQrImg" src="" alt="Prins Sahu QR Code">
+        <div style="color:#fff; font-weight:bold; font-size:13px; margin-top:4px;">PRINS SAHU</div>
+      </div>
+      <label style="text-align:left;">12 अंकों का UTR / Transaction No दर्ज करें:</label>
+      <input type="text" id="userUtrInput" placeholder="जैसे: 409283749281">
+      <button class="btn-save" id="completePaymentBtn">सत्यापित करें और डाउनलोड करें</button>
+      <button class="btn-cancel" id="cancelPaymentBtn">रद्द करें</button>
+    </div>
+  </div>
+
+  <!-- Admin Modal -->
+  <div id="adminModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3>🔒 एडमिन कंट्रोल सेंटर</h3>
+
+      <div class="admin-analytics-box">
+        <div class="analytics-title">💰 कमाई और लाइव ऑडियंस एनालिटिक्स</div>
+        <div class="analytics-row">
+          <span>🎬 कुल फिल्म देखने वाले:</span>
+          <span id="statMovieViews">0 Users</span>
+        </div>
+        <div class="analytics-row">
+          <span>⏳ ब्रेक (Promo) देखने वाले:</span>
+          <span id="statBreakViews">0 Views</span>
+        </div>
+        <div class="analytics-row">
+          <span>📥 कुल डाउनलोड्स:</span>
+          <span id="statDownloads">0 Downloads</span>
+        </div>
+        <div class="analytics-row">
+          <span>💵 एस्टिमेटेड कमाई (USD):</span>
+          <span id="statEarningsUsd">$0.00</span>
+        </div>
+        <div class="analytics-row">
+          <span>🇮🇳 कुल कमाई (INR):</span>
+          <span id="statEarningsInr">₹0.00</span>
+        </div>
+        <div class="bank-transfer-guide">
+          <strong>🏦 बैंक में पैसे कैसे ट्रांसफर करें:</strong><br>
+          आपकी यह कमाई सीधे आपके PhonePe/UPI (PRINS SAHU) या बैंक खाते से जुड़ी है।
+        </div>
+      </div>
+
+      <div class="admin-analytics-box" style="border-color:#3b82f6;">
+        <div class="analytics-title" style="color:#3b82f6;">👥 रजिस्टर्ड यूज़र्स डेटाबेस (Admin Only)</div>
+        <div class="user-log-box" id="registeredUsersContainer">अभी कोई यूज़र रजिस्टर्ड नहीं है।</div>
+      </div>
+
+      <div class="admin-analytics-box" style="border-color:#e50914;">
+        <div class="analytics-title" style="color:#e50914;">🛡️ एंटी-हैकर सुरक्षा और लोकेशन ट्रैकर</div>
+        <div class="hacker-alert-box" id="hackerLogContainer">कोई संदिग्ध गतिविधि नहीं पाई गई।</div>
+      </div>
+
+      <label>फ़िल्म / सीरीज़ / गेम / हॉरर का नाम (Title):</label>
+      <input type="text" id="mName" placeholder="जैसे: Movie Name">
+
+      <label>पार्ट चुनें (Part):</label>
+      <select id="mPartName">
+        <option value="Part 1">Part 1</option>
+        <option value="Part 2">Part 2</option>
+        <option value="Part 3">Part 3</option>
+        <option value="Part 4">Part 4</option>
+        <option value="Part 5">Part 5</option>
+      </select>
+
+      <label>सीज़न चुनें (Season):</label>
+      <select id="mSeason"></select>
+
+      <label>एपिसोड चुनें (Episode):</label>
+      <select id="mPart"></select>
+
+      <label>रिलीज़ का साल (San):</label>
+      <select id="mYear"></select>
+
+      <label>देश (Country):</label>
+      <select id="mCountry">
+        <option value="India">India</option>
+        <option value="United States">United States</option>
+        <option value="United Kingdom">United Kingdom</option>
+        <option value="Brazil">Brazil</option>
+        <option value="Japan">Japan</option>
+        <option value="Australia">Australia</option>
+        <option value="China">China</option>
+      </select>
+
+      <label>भाषा (Language):</label>
+      <select id="mLang">
+        <option value="Hindi">Hindi</option>
+        <option value="English">English</option>
+        <option value="Spanish">Spanish</option>
+        <option value="French">French</option>
+        <option value="German">German</option>
+        <option value="Japanese">Japanese</option>
+        <option value="Korean">Korean</option>
+        <option value="Chinese">Chinese</option>
+        <option value="Arabic">Arabic</option>
+        <option value="Russian">Russian</option>
+        <option value="Portuguese">Portuguese</option>
+        <option value="Italian">Italian</option>
+        <option value="Tamil">Tamil</option>
+        <option value="Telugu">Telugu</option>
+        <option value="Bengali">Bengali</option>
+        <option value="Malayalam">Malayalam</option>
+        <option value="Marathi">Marathi</option>
+        <option value="Kannada">Kannada</option>
+        <option value="Punjabi">Punjabi</option>
+      </select>
+
+      <label>प्रकार (Type):</label>
+      <select id="mType">
+        <option value="Movies">🎬 Movies (पिक्चर)</option>
+        <option value="Horror">👻 Horror (भूतिया)</option>
+        <option value="Games">🎮 खेल (Games)</option>
+        <option value="Cartoon">Cartoon</option>
+        <option value="TV shows">TV shows</option>
+        <option value="Songs">Songs</option>
+      </select>
+
+      <label>प्लेटफ़ॉर्म:</label>
+      <select id="mPlatform">
+        <option value="NETFLIX">NETFLIX</option>
+      </select>
+
+      <label style="margin-top:10px;">मुख्य कलाकार / डेवलपर (Actor/Dev):</label>
+      <input type="text" id="mActor" placeholder="जैसे: MS Dhoni, GameStudio">
+
+      <label>पोस्टर चुनें (गैलरी से):</label>
+      <div class="gallery-upload-card" id="uploadPosterCard">
+        <span id="posterFileStatus">🖼️ गैलरी से पोस्टर फ़ोटो चुनें</span>
+      </div>
+      <input type="file" id="mPosterFile" accept="image/*" style="display:none;">
+      
+      <label>मुख्य वीडियो/फाइल चुनें:</label>
+      <div class="gallery-upload-card" id="uploadVideoCard">
+        <span id="videoFileStatus">🎥 मुख्य वीडियो फ़ाइल चुनें</span>
+      </div>
+      <input type="file" id="mVideoFile" accept="video/*" style="display:none;">
+
+      <label style="margin-top:10px; color:#ffda79;">15 सेकंड का ब्रेक/प्रोमो वीडियो चुनें (वैकल्पिक):</label>
+      <div class="gallery-upload-card" id="uploadBreakCard" style="border-color:#ff007f;">
+        <span id="breakFileStatus" style="color:#ff007f;">⏳ 15 सेकंड की ब्रेक क्लिप चुनें</span>
+      </div>
+      <input type="file" id="mBreakFile" accept="video/*" style="display:none;">
+
+      <div class="upload-progress-container" id="uploadProgressBox">
+        <div class="progress-info-row">
+          <span>अपलोड हो रहा है...</span>
+          <span id="uploadPercentText">0%</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="uploadProgressBar"></div>
+        </div>
+      </div>
+
+      <button class="btn-save" id="btnSaveMovie">अपलोड और सेव करें</button>
+      <button class="btn-cancel" id="btnCancelAdmin">डैशबोर्ड बंद करें</button>
+    </div>
+  </div>
+
+  <input type="file" id="pencilBannerInput" accept="image/*" style="display:none;">
+  <input type="file" id="featuredBannerInput" accept="image/*" style="display:none;">
+
+  <script>
+    const ADMIN_PIN = "8839636988";
+
+    let appAnalytics = JSON.parse(localStorage.getItem('youflix_analytics')) || {
+      movieViews: 0,
+      breakViews: 0,
+      downloads: 0
+    };
+
+    let hackerLogs = JSON.parse(localStorage.getItem('youflix_hacker_logs')) || [];
+    let registeredUsers = JSON.parse(localStorage.getItem('youflix_registered_users')) || [];
+
+    let selectedCartoonLang = "All";
+    let selectedCartoonCountry = "All";
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('brandHomeBtn').onclick = () => switchView('home');
+      document.getElementById('headerSignInBtn').onclick = openGoogleSignInModal;
+      document.getElementById('quickSearchBtn').onclick = () => switchView('find');
+      document.getElementById('saveGoogleUserBtn').onclick = completeGoogleSignIn;
+      document.getElementById('cancelGoogleUserBtn').onclick = closeGoogleSignInModal;
+
+      document.getElementById('closeCartoonBtn').onclick = closeCartoonScreen;
+      document.getElementById('openAdminFromCartoonBtn').onclick = openAdminPrompt;
+
+      document.getElementById('closeGamesBtn').onclick = closeGamesScreen;
+
+      document.getElementById('cartoonChipBtn').onclick = openCartoonScreen;
+      document.getElementById('gamesChipBtn').onclick = openGamesScreen;
+
+      document.getElementById('navHome').onclick = () => switchView('home');
+      document.getElementById('navFind').onclick = () => switchView('find');
+      document.getElementById('navAdminPlusBtn').onclick = openAdminPrompt;
+      document.getElementById('navDownload').onclick = () => alert('डाउनलोड सूची खाली है।');
+      document.getElementById('navMe').onclick = openAdminPrompt;
+
+      document.getElementById('closePlayerBtn').onclick = closePlayer;
+      document.getElementById('openYtSettingsBtn').onclick = openYtSettingsMenu;
+      document.getElementById('playVideoBtn').onclick = playCurrentVideoWithBreak;
+
+      document.getElementById('listBtn').onclick = () => alert('Saved to List!');
+      document.getElementById('rateBtn').onclick = () => alert('धन्यवाद! रेटिंग दर्ज हुई।');
+      document.getElementById('shareBtn').onclick = sharePlayerDetails;
+      document.getElementById('downloadBtn').onclick = triggerPaidDownload;
+
+      document.getElementById('changeSeasonSpan').onclick = openSeasonSheet;
+      document.getElementById('pSeasonPill').onclick = openSeasonSheet;
+
+      document.getElementById('qualityMenuRow').onclick = openYtQualityMenu;
+      document.getElementById('speedMenuRow').onclick = cyclePlaybackSpeed;
+      document.getElementById('captionsMenuRow').onclick = toggleCaptions;
+      document.getElementById('lockMenuRow').onclick = lockVideoScreen;
+
+      document.getElementById('completePaymentBtn').onclick = completePaymentAndDownload;
+      document.getElementById('cancelPaymentBtn').onclick = closePaymentModal;
+
+      document.getElementById('uploadPosterCard').onclick = () => document.getElementById('mPosterFile').click();
+      document.getElementById('uploadVideoCard').onclick = () => document.getElementById('mVideoFile').click();
+      document.getElementById('uploadBreakCard').onclick = () => document.getElementById('mBreakFile').click();
+
+      document.getElementById('mPosterFile').onchange = handlePosterUpload;
+      document.getElementById('mVideoFile').onchange = handleVideoUpload;
+      document.getElementById('mBreakFile').onchange = handleBreakUpload;
+
+      document.getElementById('btnSaveMovie').onclick = startUploadWithProgress;
+      document.getElementById('btnCancelAdmin').onclick = closeAdmin;
+
+      switchView('home');
+      renderHomeStars();
+    });
+
+    function openCartoonScreen() {
+      document.getElementById('cartoonModal').style.display = 'flex';
+      renderCartoonContent();
+    }
+
+    function closeCartoonScreen() {
+      document.getElementById('cartoonModal').style.display = 'none';
+    }
+
+    function filterCartoonLang(lang, el) {
+      selectedCartoonLang = lang;
+      document.querySelectorAll('#cartoonLangBar .hub-chip').forEach(c => c.classList.remove('active-hub-chip'));
+      if (el) el.classList.add('active-hub-chip');
+      renderCartoonContent();
+    }
+
+    function filterCartoonCountry(country, el) {
+      selectedCartoonCountry = country;
+      document.querySelectorAll('#cartoonCountryBar .hub-chip').forEach(c => c.classList.remove('active-hub-chip'));
+      if (el) el.classList.add('active-hub-chip');
+      renderCartoonContent();
+    }
+
+    function renderCartoonContent() {
+      const container = document.getElementById('cartoonSlotContainer');
+      container.innerHTML = "";
+      
+      const filtered = movies.filter(m => {
+        const isCartoon = (m.type === 'Cartoon' || m.genre === 'Cartoon');
+        const matchLang = (selectedCartoonLang === "All" || (m.lang && m.lang.toLowerCase() === selectedCartoonLang.toLowerCase()));
+        const matchCountry = (selectedCartoonCountry === "All" || (m.country && m.country.toLowerCase() === selectedCartoonCountry.toLowerCase()));
+        return isCartoon && matchLang && matchCountry;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:30px; color:#888;">इस श्रेणी में कोई कार्टून उपलब्ध नहीं है। नीचे (+) बटन से जोड़ें।</div>`;
+        return;
+      }
+
+      filtered.forEach((cartoon, idx) => {
+        const card = document.createElement('div');
+        card.className = "cartoon-slot-card";
+        card.innerHTML = `
+          <div class="cartoon-red-box">${idx + 1}</div>
+          <div class="cartoon-name-text">${cartoon.title}</div>
+        `;
+        card.onclick = () => {
+          closeCartoonScreen();
+          openPlayer(cartoon);
+        };
+        container.appendChild(card);
+      });
+    }
+
+    function openGoogleSignInModal() {
+      document.getElementById('googleSignInModal').style.display = 'flex';
+    }
+
+    function closeGoogleSignInModal() {
+      document.getElementById('googleSignInModal').style.display = 'none';
+    }
+
+    function completeGoogleSignIn() {
+      const userName = document.getElementById('googleUserNameInput').value.trim();
+      const userEmail = document.getElementById('googleUserEmailInput').value.trim();
+
+      if (!userName || !userEmail) {
+        alert("कृपया अपना नाम और ईमेल दोनों दर्ज करें!");
+        return;
+      }
+
+      const newUser = {
+        name: userName,
+        email: userEmail,
+        time: new Date().toLocaleString()
+      };
+
+      let existing = registeredUsers.find(u => u.email === userEmail);
+      if (!existing) {
+        registeredUsers.unshift(newUser);
+        localStorage.setItem('youflix_registered_users', JSON.stringify(registeredUsers));
+        alert(`स्वागत है ${userName}! आपका Google Sign-up सफल रहा।`);
+      } else {
+        alert(`स्वागत है दोबारा ${userName}!`);
+      }
+
+      document.getElementById('googleUserNameInput').value = "";
+      document.getElementById('googleUserEmailInput').value = "";
+      closeGoogleSignInModal();
+    }
+
+    function updateRegisteredUsersDisplay() {
+      const container = document.getElementById('registeredUsersContainer');
+      if (registeredUsers.length === 0) {
+        container.innerHTML = "अभी कोई यूज़र रजिस्टर्ड नहीं है।";
+      } else {
+        container.innerHTML = registeredUsers.map(u => `<div>👤 [${u.time}] ${u.name} (${u.email})</div>`).join('');
+      }
+    }
+
+    let selectedGamesLang = "All";
+    let selectedGamesCountry = "All";
+
+    function openGamesScreen() {
+      document.getElementById('gamesModal').style.display = 'flex';
+      renderGamesContent();
+    }
+
+    function closeGamesScreen() {
+      document.getElementById('gamesModal').style.display = 'none';
+    }
+
+    function filterGamesLang(lang, el) {
+      selectedGamesLang = lang;
+      document.querySelectorAll('#gamesLangBar .hub-chip').forEach(c => c.classList.remove('active-hub-chip'));
+      if (el) el.classList.add('active-hub-chip');
+      renderGamesContent();
+    }
+
+    function filterGamesCountry(country, el) {
+      selectedGamesCountry = country;
+      document.querySelectorAll('#gamesCountryBar .hub-chip').forEach(c => c.classList.remove('active-hub-chip'));
+      if (el) el.classList.add('active-hub-chip');
+      renderGamesContent();
+    }
+
+    function renderGamesContent() {
+      const container = document.getElementById('gamesMovieContainer');
+      container.innerHTML = "";
+      
+      const filtered = movies.filter(m => {
+        const isGame = (m.type === 'Games' || m.title.toLowerCase().includes('game') || m.title.toLowerCase().includes('cricket') || m.title.toLowerCase().includes('ludo'));
+        const matchLang = (selectedGamesLang === "All" || (m.lang && m.lang.toLowerCase() === selectedGamesLang.toLowerCase()));
+        const matchCountry = (selectedGamesCountry === "All" || (m.country && m.country.toLowerCase() === selectedGamesCountry.toLowerCase()));
+        return isGame && matchLang && matchCountry;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:30px 10px; color:#888;">इस भाषा या देश में कोई खेल उपलब्ध नहीं है</div>`;
+        return;
+      }
+      renderMovieCardsToContainer(filtered, container);
+    }
+
+    function updateAnalyticsDisplay() {
+      appAnalytics.movieViews = Number(appAnalytics.movieViews) || 0;
+      appAnalytics.breakViews = Number(appAnalytics.breakViews) || 0;
+      appAnalytics.downloads = Number(appAnalytics.downloads) || 0;
+
+      document.getElementById('statMovieViews').innerText = appAnalytics.movieViews + " Users";
+      document.getElementById('statBreakViews').innerText = appAnalytics.breakViews + " Views";
+      document.getElementById('statDownloads').innerText = appAnalytics.downloads + " Downloads";
+      
+      let totalUsd = (appAnalytics.movieViews * 0.008) + (appAnalytics.breakViews * 0.005) + (appAnalytics.downloads * 0.05);
+      let totalInr = totalUsd * 83;
+
+      document.getElementById('statEarningsUsd').innerText = "$" + totalUsd.toFixed(2);
+      document.getElementById('statEarningsInr').innerText = "₹" + totalInr.toFixed(2);
+
+      const logContainer = document.getElementById('hackerLogContainer');
+      if (hackerLogs.length === 0) {
+        logContainer.innerHTML = "कोई संदिग्ध गतिविधि नहीं पाई गई। सिस्टम पूरी तरह सुरक्षित है।";
+      } else {
+        logContainer.innerHTML = hackerLogs.map(log => `<div>🚨 [${log.time}] गलत पिन प्रयास! Device: ${log.device} | GPS: ${log.lat}, ${log.lng}</div>`).join('');
+      }
+
+      updateRegisteredUsersDisplay();
+    }
+
+    function recordHackerAttempt(enteredPin) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            saveHackerLog(position.coords.latitude, position.coords.longitude);
+          },
+          (error) => {
+            saveHackerLog("Location Denied", "Location Denied");
+          },
+          { timeout: 5000 }
+        );
+      } else {
+        saveHackerLog("Not Supported", "Not Supported");
+      }
+    }
+
+    function saveHackerLog(lat, lng) {
+      const now = new Date().toLocaleString();
+      const deviceDetails = navigator.userAgent.substring(0, 40) + "...";
+      hackerLogs.unshift({ time: now, device: deviceDetails, lat: lat, lng: lng });
+      if (hackerLogs.length > 10) hackerLogs.pop();
+      localStorage.setItem('youflix_hacker_logs', JSON.stringify(hackerLogs));
+    }
+
+    function generateAdminDropdowns() {
+      const seasonSelect = document.getElementById('mSeason');
+      const partSelect = document.getElementById('mPart');
+      const yearSelect = document.getElementById('mYear');
+      const yearFilterRow = document.getElementById('yearFilters');
+
+      if (seasonSelect && partSelect && yearSelect && yearFilterRow) {
+        seasonSelect.innerHTML = "";
+        partSelect.innerHTML = "";
+        yearSelect.innerHTML = "";
+        yearFilterRow.innerHTML = `<div class="chip active-main" onclick="selectFilter('year', 'All', this)">All Years</div>`;
+
+        for (let i = 1; i <= 40; i++) {
+          let optS = document.createElement('option');
+          optS.value = `Season ${i}`;
+          optS.innerText = `Season ${i}`;
+          seasonSelect.appendChild(optS);
+        }
+
+        for (let j = 1; j <= 5000; j++) {
+          let optP = document.createElement('option');
+          optP.value = `E${j}`;
+          optP.innerText = `E${j}`;
+          partSelect.appendChild(optP);
+        }
+
+        for (let y = 2026; y >= 1900; y--) {
+          let optY = document.createElement('option');
+          optY.value = y;
+          optY.innerText = y;
+          yearSelect.appendChild(optY);
+
+          let chipY = document.createElement('div');
+          chipY.className = "chip";
+          chipY.innerText = y;
+          chipY.onclick = function() { selectFilter('year', y, this); };
+          yearFilterRow.appendChild(chipY);
+        }
+      }
+    }
+
+    let featuredBannerImage = localStorage.getItem('youflix_featured_banner') || "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800";
+    document.getElementById('mainFeaturedImg').src = featuredBannerImage;
+
+    let defaultMovies = [
+      {
+        id: 1,
+        title: "Bloodhounds",
+        lang: "Hindi",
+        country: "South Korea",
+        year: "2026",
+        currentSeason: "Season 1",
+        type: "TV shows",
+        genre: "Action",
+        platform: "NETFLIX",
+        actor: "Woo Do-hwan",
+        rating: "8.8",
+        duration: "01:03:17",
+        poster: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400",
+        video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        breakVideo: "",
+        parts: {
+          "Season 1": [
+            { name: "E1", time: "01:03:17", video: "https://www.w3schools.com/html/mov_bbb.mp4", thumb: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=300" }
+          ],
+          "Season 2": [
+            { name: "E1", time: "55:05", video: "https://www.w3schools.com/html/movie.mp4", thumb: "https://images.unsplash.com/photo-1509281373149-e957c6296406?w=300" }
+          ]
+        }
+      }
+    ];
+
+    let movies = JSON.parse(localStorage.getItem('youflix_movies')) || defaultMovies;
+    let stars = JSON.parse(localStorage.getItem('youflix_stars')) || [];
+    let isAdminActive = false;
+    let currentActiveMovie = null;
+    let currentPlayingEpIndex = 0;
+    let uploadedPosterBase64 = "";
+    let uploadedVideoDataUrl = "";
+    let uploadedBreakDataUrl = "";
+
+    let homeSelectedLang = "All";
+    let homeSelectedActor = "All";
+    let activeFilter = { type: "All", genre: "All", platform: "All", country: "All", year: "All", lang: "All" };
+
+    let paymentConfig = JSON.parse(localStorage.getItem('youflix_pay_config')) || {
+      payee: "PRINS SAHU",
+      qr: "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=8839636988@ybl%26pn=PRINS%20SAHU%26am=100%26cu=INR"
+    };
+
+    function switchView(viewName) {
+      document.getElementById('homeScreen').classList.remove('active-screen');
+      document.getElementById('findScreen').classList.remove('active-screen');
+      document.getElementById('navHome').classList.remove('active');
+      document.getElementById('navFind').classList.remove('active');
+
+      if (viewName === 'home') {
+        document.getElementById('homeScreen').classList.add('active-screen');
+        document.getElementById('navHome').classList.add('active');
+        renderHomeMovies();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (viewName === 'find') {
+        document.getElementById('findScreen').classList.add('active-screen');
+        document.getElementById('navFind').classList.add('active');
+        generateAdminDropdowns();
+        applyAllFilters();
+      }
+    }
+
+    function selectHomeLang(lang, el) {
+      homeSelectedLang = lang;
+      homeSelectedActor = "All";
+      document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('selected-lang'));
+      if (el) el.classList.add('selected-lang');
+      renderHomeStars();
+      renderHomeMovies();
+    }
+
+    function renderHomeStars() {
+      const container = document.getElementById('homeActorsList');
+      container.innerHTML = "";
+      const filteredStars = homeSelectedLang === "All" ? stars : stars.filter(s => s.lang.toLowerCase() === homeSelectedLang.toLowerCase());
+
+      filteredStars.forEach(star => {
+        const item = document.createElement('div');
+        item.className = `actor-item ${homeSelectedActor === star.name ? 'active-actor' : ''}`;
+        item.innerHTML = `<div class="actor-img-box"><img src="${star.photo}"></div><div class="actor-name">${star.name}</div>`;
+        item.onclick = () => {
+          homeSelectedActor = (homeSelectedActor === star.name) ? "All" : star.name;
+          renderHomeStars();
+          renderHomeMovies();
+        };
+        container.appendChild(item);
+      });
+
+      const addBtn = document.createElement('div');
+      addBtn.className = "actor-add-btn";
+      addBtn.innerHTML = `+<span>Add Star</span>`;
+      addBtn.onclick = openAdminPrompt;
+      container.appendChild(addBtn);
+    }
+
+    function renderHomeMovies() {
+      const container = document.getElementById('homeMovieContainer');
+      container.innerHTML = "";
+      const filtered = movies.filter(m => {
+        const matchLang = (homeSelectedLang === "All" || (m.lang && m.lang.toLowerCase() === homeSelectedLang.toLowerCase()));
+        const matchActor = (homeSelectedActor === "All" || (m.actor && m.actor.toLowerCase().includes(homeSelectedActor.toLowerCase())));
+        return matchLang && matchActor;
+      });
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:30px 10px; color:#888;">कोई वीडियो उपलब्ध नहीं है</div>`;
+        return;
+      }
+      renderMovieCardsToContainer(filtered, container);
+    }
+
+    function selectFilter(category, val, el) {
+      activeFilter[category] = val;
+      const parent = el.parentElement;
+      parent.querySelectorAll('.chip').forEach(c => c.classList.remove('active', 'active-main'));
+      el.classList.add(val === 'All' ? 'active-main' : 'active');
+      applyAllFilters();
+    }
+
+    function applyAllFilters() {
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const container = document.getElementById('findMovieContainer');
+      container.innerHTML = "";
+      const filtered = movies.filter(m => {
+        const matchTitle = m.title ? m.title.toLowerCase().includes(query) : false;
+        const matchActor = m.actor ? m.actor.toLowerCase().includes(query) : false;
+        const matchSearch = (!query) || matchTitle || matchActor;
+        const matchType = (activeFilter.type === "All" || m.type === activeFilter.type);
+        const matchGenre = (activeFilter.genre === "All" || m.genre === activeFilter.genre);
+        const matchPlatform = (activeFilter.platform === "All" || (m.platform && m.platform.toLowerCase() === activeFilter.platform.toLowerCase()));
+        const matchCountry = (activeFilter.country === "All" || (m.country && m.country.toLowerCase() === activeFilter.country.toLowerCase()));
+        const matchYear = (activeFilter.year === "All" || (m.year && m.year.toString() === activeFilter.year.toString()));
+        const matchLang = (activeFilter.lang === "All" || (m.lang && m.lang.toLowerCase() === activeFilter.lang.toLowerCase()));
+        return matchSearch && matchType && matchGenre && matchPlatform && matchCountry && matchYear && matchLang;
+      });
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:30px 10px; color:#888;">कोई परिणाम नहीं मिला</div>`;
+        return;
+      }
+      renderMovieCardsToContainer(filtered, container);
+    }
+
+    function renderMovieCardsToContainer(items, container) {
+      items.forEach(movie => {
+        const card = document.createElement('div');
+        card.className = "movie-card";
+        card.innerHTML = `
+          <div class="poster-wrap">
+            <span class="badge-top">MULTILINGUAL</span>
+            <img src="${movie.poster}" onerror="this.src='https://via.placeholder.com/300x450/222/fff?text=Poster'">
+            <div class="bottom-meta"><span>${movie.duration || '2:10:00'}</span><span class="rating-badge">${movie.rating || '8.8'}</span></div>
+          </div>
+          <div class="movie-card-title">${movie.title}</div>
+        `;
+        card.onclick = () => openPlayer(movie);
+        container.appendChild(card);
+      });
+    }
+
+    function openPlayer(movie) {
+      currentActiveMovie = movie;
+      if (!currentActiveMovie.currentSeason) currentActiveMovie.currentSeason = "Season 1";
+
+      appAnalytics.movieViews = (Number(appAnalytics.movieViews) || 0) + 1;
+      localStorage.setItem('youflix_analytics', JSON.stringify(appAnalytics));
+
+      document.getElementById('pTitle').innerText = movie.title;
+      document.getElementById('pSeasonPill').innerText = currentActiveMovie.currentSeason + ' ▾';
+      document.getElementById('pRating').innerText = `Rating ${movie.rating || '8.8'} ★`;
+      document.getElementById('pYearTag').innerText = movie.year || '2026';
+      document.getElementById('pCountryTag').innerText = movie.country || 'India';
+      document.getElementById('pGenreTag').innerText = movie.genre || 'Action';
+      document.getElementById('pLangTag').innerText = movie.lang || 'Hindi';
+
+      currentPlayingEpIndex = 0;
+      loadEpisodeVideo(currentPlayingEpIndex);
+      renderEpisodes(movie);
+      buildSeasonList();
+      document.getElementById('playerModal').style.display = 'flex';
+    }
+
+    function loadEpisodeVideo(index) {
+      const seasonParts = getSeasonParts(currentActiveMovie, currentActiveMovie.currentSeason);
+      const ep = seasonParts[index] || { video: currentActiveMovie.video, thumb: currentActiveMovie.poster };
+      const videoEl = document.getElementById('mainVideo');
+      videoEl.src = ep.video;
+      videoEl.poster = ep.thumb || currentActiveMovie.poster;
+    }
+
+    function playCurrentVideoWithBreak() {
+      const videoEl = document.getElementById('mainVideo');
+      const breakBanner = document.getElementById('breakNoticeBanner');
+      
+      if (currentActiveMovie && currentActiveMovie.breakVideo) {
+        appAnalytics.breakViews = (Number(appAnalytics.breakViews) || 0) + 1;
+        localStorage.setItem('youflix_analytics', JSON.stringify(appAnalytics));
+
+        videoEl.src = currentActiveMovie.breakVideo;
+        breakBanner.style.display = 'block';
+        videoEl.play();
+
+        videoEl.onended = function() {
+          breakBanner.style.display = 'none';
+          loadEpisodeVideo(currentPlayingEpIndex);
+          videoEl.play();
+          videoEl.onended = null;
+        };
+      } else {
+        breakBanner.style.display = 'none';
+        videoEl.play();
+      }
+    }
+
+    function getSeasonParts(movie, seasonName) {
+      if (movie.parts && movie.parts[seasonName] && movie.parts[seasonName].length > 0) {
+        return movie.parts[seasonName];
+      }
+      return [{ name: "E1", time: movie.duration || "01:03:17", video: movie.video, thumb: movie.poster }];
+    }
+
+    function renderEpisodes(movie) {
+      const container = document.getElementById('episodesList');
+      const heading = document.getElementById('episodesHeading');
+      container.innerHTML = "";
+      const seasonName = movie.currentSeason || "Season 1";
+      const partsList = getSeasonParts(movie, seasonName);
+
+      heading.innerText = `${seasonName} • ${partsList.length} Episodes`;
+
+      partsList.forEach((item, idx) => {
+        const epCard = document.createElement('div');
+        epCard.className = `episode-card ${idx === currentPlayingEpIndex ? 'active-ep' : ''}`;
+        epCard.innerHTML = `
+          <div class="ep-thumb-box">
+            <img src="${item.thumb}" onerror="this.src='${movie.poster}'">
+            <span class="ep-duration">${item.time || 'E'}</span>
+          </div>
+          <div class="ep-info">${item.name || 'E' + (idx + 1)}</div>
+        `;
+        epCard.onclick = () => {
+          currentPlayingEpIndex = idx;
+          loadEpisodeVideo(idx);
+          playCurrentVideoWithBreak();
+          renderEpisodes(movie);
+        };
+        container.appendChild(epCard);
+      });
+    }
+
+    function buildSeasonList() {
+      const container = document.getElementById('seasonListOptions');
+      container.innerHTML = "";
+      
+      if (currentActiveMovie && currentActiveMovie.parts) {
+        Object.keys(currentActiveMovie.parts).forEach(sName => {
+          const item = document.createElement('div');
+          item.className = "season-option-item";
+          item.innerText = sName;
+          item.onclick = () => selectSeason(sName);
+          container.appendChild(item);
+        });
+      } else {
+        const item = document.createElement('div');
+        item.className = "season-option-item";
+        item.innerText = "Season 1";
+        item.onclick = () => selectSeason("Season 1");
+        container.appendChild(item);
+      }
+    }
+
+    function openSeasonSheet() { document.getElementById('seasonSheet').classList.add('show'); }
+    function closeSeasonSheet() { document.getElementById('seasonSheet').classList.remove('show'); }
+
+    function selectSeason(sName) {
+      if (currentActiveMovie) {
+        currentActiveMovie.currentSeason = sName;
+        document.getElementById('pSeasonPill').innerText = `${sName} ▾`;
+        currentPlayingEpIndex = 0;
+        loadEpisodeVideo(0);
+        renderEpisodes(currentActiveMovie);
+      }
+      closeSeasonSheet();
+    }
+
+    document.addEventListener('click', function(e) {
+      const sheet = document.getElementById('seasonSheet');
+      const pill = document.getElementById('pSeasonPill');
+      const dotsBtn = document.getElementById('bannerDotsBtn');
+      const menu = document.getElementById('bannerDropdownMenu');
+
+      if (sheet && sheet.classList.contains('show') && !sheet.contains(e.target) && e.target !== pill) {
+        closeSeasonSheet();
+      }
+      if (menu && menu.style.display === 'block' && !menu.contains(e.target) && e.target !== dotsBtn) {
+        menu.style.display = 'none';
+      }
+    });
+
+    function closePlayer() {
+      const videoEl = document.getElementById('mainVideo');
+      videoEl.pause();
+      videoEl.src = "";
+      document.getElementById('breakNoticeBanner').style.display = 'none';
+      document.getElementById('playerModal').style.display = 'none';
+      closeSeasonSheet();
+      closeYtOverlays();
+    }
+
+    function sharePlayerDetails() {
+      if (navigator.share && currentActiveMovie) {
+        navigator.share({ title: currentActiveMovie.title, text: `YOUFLIX पर '${currentActiveMovie.title}' देखें!`, url: window.location.href }).catch(() => {});
+      } else {
+        alert("लिंक कॉपी हो गया!");
+      }
+    }
+
+    function triggerPaidDownload() {
+      if (!currentActiveMovie) return;
+      
+      appAnalytics.downloads = (Number(appAnalytics.downloads) || 0) + 1;
+      localStorage.setItem('youflix_analytics', JSON.stringify(appAnalytics));
+
+      document.getElementById('payMovieName').innerText = currentActiveMovie.title;
+      document.getElementById('displayQrImg').src = paymentConfig.qr;
+      document.getElementById('paymentModal').style.display = 'flex';
+    }
+
+    function closePaymentModal() { document.getElementById('paymentModal').style.display = 'none'; }
+
+    function completePaymentAndDownload() {
+      const utr = document.getElementById('userUtrInput').value.trim();
+      if (!utr || utr.length < 8) {
+        alert("कृपया सही 12 अंकों का UTR नंबर डालें!");
+        return;
+      }
+      alert(`भुगतान सत्यापित हुआ! डाउनलोड शुरू हो रहा है...`);
+      closePaymentModal();
+      const link = document.createElement('a');
+      link.href = currentActiveMovie.video;
+      link.download = currentActiveMovie.title + ".mp4";
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    let currentActiveQuality = "720p";
+    let currentSpeed = 1;
+    let captionsOn = false;
+
+    function openYtSettingsMenu() { document.getElementById('ytSettingsMenu').style.display = 'flex'; }
+    function closeYtOverlays(event) {
+      if (event) event.stopPropagation();
+      document.getElementById('ytSettingsMenu').style.display = 'none';
+      document.getElementById('ytQualityModeMenu').style.display = 'none';
+      document.getElementById('ytAdvancedResMenu').style.display = 'none';
+    }
+    function openYtQualityMenu() {
+      document.getElementById('ytSettingsMenu').style.display = 'none';
+      document.getElementById('ytQualityHeader').innerText = `Quality for current video • ${currentActiveQuality}`;
+      document.getElementById('ytQualityModeMenu').style.display = 'flex';
+    }
+    function selectQualityMode(modeName) {
+      document.getElementById('checkAuto').style.display = 'none';
+      document.getElementById('checkHigher').style.display = 'none';
+      if (modeName.includes('Auto')) { document.getElementById('checkAuto').style.display = 'inline'; currentActiveQuality = "720p"; }
+      else { document.getElementById('checkHigher').style.display = 'inline'; currentActiveQuality = "1080p"; }
+      document.getElementById('ytDisplayQualityLabel').innerText = modeName;
+      closeYtOverlays();
+      alert(`क्वालिटी सेट की गई: ${modeName}`);
+    }
+    function openYtAdvancedResolutionMenu() {
+      document.getElementById('ytQualityModeMenu').style.display = 'none';
+      document.getElementById('ytAdvancedResMenu').style.display = 'flex';
+    }
+    function setSpecificResolution(res) {
+      currentActiveQuality = res;
+      document.getElementById('ytDisplayQualityLabel').innerText = res;
+      ['1080p','720p','480p','360p'].forEach(id => {
+        const el = document.getElementById('resCheck' + id);
+        if (el) el.style.display = 'none';
+      });
+      const target = document.getElementById('resCheck' + res);
+      if (target) target.style.display = 'inline';
+      closeYtOverlays();
+      alert(`रेजोल्यूशन सेट किया गया: ${res}`);
+    }
+    function cyclePlaybackSpeed() {
+      const speeds = [0.5, 1, 1.25, 1.5, 2];
+      let curIdx = speeds.indexOf(currentSpeed);
+      curIdx = (curIdx + 1) % speeds.length;
+      currentSpeed = speeds[curIdx];
+      const videoEl = document.getElementById('mainVideo');
+      if (videoEl) videoEl.playbackRate = currentSpeed;
+      document.getElementById('ytDisplaySpeedLabel').innerText = `${currentSpeed}x`;
+      alert(`Speed: ${currentSpeed}x`);
+    }
+    function toggleCaptions() {
+      captionsOn = !captionsOn;
+      document.getElementById('ytDisplayCaptionsLabel').innerText = captionsOn ? 'English' : 'Off';
+    }
+    function lockVideoScreen() {
+      closeYtOverlays();
+      const videoEl = document.getElementById('mainVideo');
+      if (videoEl) videoEl.controls = false;
+      document.getElementById('lockOverlayNotice').style.display = 'block';
+    }
+    function unlockVideoScreen() {
+      const videoEl = document.getElementById('mainVideo');
+      if (videoEl) videoEl.controls = true;
+      document.getElementById('lockOverlayNotice').style.display = 'none';
+    }
+
+    function handlePosterUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          uploadedPosterBase64 = e.target.result;
+          document.getElementById('posterFileStatus').innerText = `✅ चुना गया: ${file.name}`;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleVideoUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        uploadedVideoDataUrl = URL.createObjectURL(file);
+        document.getElementById('videoFileStatus').innerText = `✅ चुना गया: ${file.name}`;
+      }
+    }
+
+    function handleBreakUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        uploadedBreakDataUrl = URL.createObjectURL(file);
+        document.getElementById('breakFileStatus').innerText = `✅ ब्रेक क्लिप: ${file.name}`;
+      }
+    }
+
+    function startUploadWithProgress() {
+      const name = document.getElementById('mName').value.trim();
+      const partName = document.getElementById('mPartName').value;
+      const season = document.getElementById('mSeason').value;
+      const part = document.getElementById('mPart').value;
+      const actor = document.getElementById('mActor').value.trim();
+      const year = document.getElementById('mYear').value;
+      const country = document.getElementById('mCountry').value;
+      const type = document.getElementById('mType').value;
+      const lang = document.getElementById('mLang').value;
+
+      if (!name) { alert("कृपया नाम लिखें!"); return; }
+      if (!uploadedVideoDataUrl) { alert("कृपया मुख्य वीडियो चुनें!"); return; }
+
+      const progressBox = document.getElementById('uploadProgressBox');
+      const progressBar = document.getElementById('uploadProgressBar');
+      const percentText = document.getElementById('uploadPercentText');
+      const btnSave = document.getElementById('btnSaveMovie');
+      const btnCancel = document.getElementById('btnCancelAdmin');
+
+      progressBox.style.display = 'block';
+      btnSave.disabled = true;
+      btnCancel.disabled = true;
+      btnSave.innerText = 'अपलोड हो रहा है...';
+
+      let currentPercent = 0;
+      const uploadInterval = setInterval(() => {
+        currentPercent += Math.floor(Math.random() * 8) + 4;
+        if (currentPercent >= 100) {
+          currentPercent = 100;
+          clearInterval(uploadInterval);
+          progressBar.style.width = '100%';
+          percentText.innerText = '100%';
+
+          setTimeout(() => {
+            let fullTitle = `${name} (${partName})`;
+            let existingMovie = movies.find(m => m.title.toLowerCase() === fullTitle.toLowerCase());
+            
+            const newPartObj = {
+              name: part,
+              time: "E",
+              video: uploadedVideoDataUrl,
+              thumb: uploadedPosterBase64 || 'https://via.placeholder.com/300x450/222/fff'
+            };
+
+            if (existingMovie) {
+              if (!existingMovie.parts) existingMovie.parts = {};
+              if (!existingMovie.parts[season]) existingMovie.parts[season] = [];
+              existingMovie.parts[season].push(newPartObj);
+              if (uploadedBreakDataUrl) existingMovie.breakVideo = uploadedBreakDataUrl;
+              if (uploadedPosterBase64) existingMovie.poster = uploadedPosterBase64;
+              alert(`100% पूरा! '${fullTitle}' में नया पार्ट जुड़ गया!`);
+            } else {
+              const newMovie = {
+                id: Date.now(),
+                title: fullTitle,
+                actor: actor,
+                currentSeason: season,
+                year: year,
+                country: country,
+                type: type,
+                lang: lang,
+                genre: "Comedy",
+                platform: "NETFLIX",
+                rating: "9.0",
+                duration: "Series",
+                poster: uploadedPosterBase64 || ('https://via.placeholder.com/300x450/222/fff?text=' + encodeURIComponent(fullTitle)),
+                video: uploadedVideoDataUrl,
+                breakVideo: uploadedBreakDataUrl || "",
+                parts: { [season]: [newPartObj] }
+              };
+              movies.unshift(newMovie);
+              alert(`100% पूरा! '${fullTitle}' सफलतापूर्वक अपलोड हो गई!`);
+            }
+
+            localStorage.setItem('youflix_movies', JSON.stringify(movies));
+            closeAdmin();
+            renderHomeMovies();
+            applyAllFilters();
+          }, 300);
+        } else {
+          progressBar.style.width = currentPercent + '%';
+          percentText.innerText = currentPercent + '%';
+        }
+      }, 100);
+    }
+
+    function openAdminPrompt() {
+      const pin = prompt("एडमिन पिन दर्ज करें:");
+      if (pin === ADMIN_PIN) {
+        isAdminActive = true;
+        document.getElementById('bannerDotsBtn').style.display = 'flex';
+
+        generateAdminDropdowns();
+        updateAnalyticsDisplay();
+        document.getElementById('adminModal').style.display = 'flex';
+        renderHomeMovies();
+        applyAllFilters();
+      } else if (pin !== null) { 
+        recordHackerAttempt(pin);
+        alert("गलत पिन! आपकी गतिविधि सुरक्षा लॉग में दर्ज कर ली गई है।"); 
+      }
+    }
+
+    function closeAdmin() {
+      document.getElementById('adminModal').style.display = 'none';
+      document.getElementById('uploadProgressBox').style.display = 'none';
+      document.getElementById('uploadProgressBar').style.width = '0%';
+      document.getElementById('uploadPercentText').innerText = '0%';
+      document.getElementById('btnSaveMovie').disabled = false;
+      document.getElementById('btnSaveMovie').innerText = 'अपलोड और सेव करें';
+      document.getElementById('btnCancelAdmin').disabled = false;
+    }
+
+    function toggleBannerMenu(event) {
+      event.stopPropagation();
+      const menu = document.getElementById('bannerDropdownMenu');
+      menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function triggerBannerChange() {
+      document.getElementById('bannerDropdownMenu').style.display = 'none';
+      document.getElementById('featuredBannerInput').click();
+    }
+
+    function triggerBannerDelete() {
+      document.getElementById('bannerDropdownMenu').style.display = 'none';
+      if (confirm("क्या आप इस बैनर को हटाकर डिफ़ॉल्ट बैनर सेट करना चाहते हैं?")) {
+        featuredBannerImage = "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800";
+        localStorage.setItem('youflix_featured_banner', featuredBannerImage);
+        document.getElementById('mainFeaturedImg').src = featuredBannerImage;
+        alert("बैनर डिफ़ॉल्ट कर दिया गया है!");
+      }
+    }
+  </script>
+</body>
+</html>
